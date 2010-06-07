@@ -126,9 +126,10 @@ public class JSUnit {
     }
 
     /**
-     * Main.  Args include filenames with optional '-todir <dir>' included
+     * Main.  Args include filenames with optional '-todir &;t'dir>' or '-basedir &lt;dir> included
      * at any position within files.  todir option gives directory to write
-     * junit-style 'plain' and 'xml' reports.  Default todir is 'target/surefire-reports'.
+     * junit-style 'plain' and 'xml' reports, default todir is 'target/surefire-reports'.
+     * basedir gives base directory for given filenames, default basedir is '/'.
      * @param args js files
      */
     public static void main(String[] args) {
@@ -136,20 +137,29 @@ public class JSUnit {
         String userDir = System.getProperty("user.dir", "");
         try {
             String todir = "target/surefire-reports";
+            String basedir = "";
             int i = 0;
             while (i < args.length) {
                 String arg = args[i++];
-                if ("-todir".equals(arg) && i < args.length) {
+                if ("-todir".equals(arg)) {
                     todir = args[i++];
                     File f = new File(todir);
                     if (!f.exists()) {
                         f.mkdir();
                     }
                     continue;
+                } else if ("-basedir".equals(arg)) {
+                    basedir = args[i++];
+                    continue;
                 }
-                Test suite = getTests(arg);
-                File file = new File(arg);
-                String testName = "jsunit." + file.getName().split("\\.")[0];
+                // get suite using full filepath
+                Test suite = getTests(basedir + "/" + arg);
+
+                // we need to mimic java-style pkgname.classname style to make reports look nice
+                // strip '.js' suffix, exclude basedir, prefix with 'jsunit.' and change slashes to dots
+                String testName = "jsunit." + arg.replaceAll("\\.js$", "").replaceAll("/|\\\\", ".");
+
+                // always write plain and xml reports - don't bother making people choose
                 PrintStream plain = new PrintStream(new FileOutputStream(todir + "/TEST-" + testName + ".txt"), true, "UTF-8");
                 PrintStream xml = new PrintStream(new FileOutputStream(todir + "/TEST-" + testName + ".xml"), true, "UTF-8");;
                 JSUnitResultWriter printer = new JSUnitResultWriter(System.out, plain, xml);
