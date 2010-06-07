@@ -102,8 +102,8 @@ public class JSUnit {
             try {
                 scope.load("jsunit.js");
                 getTests = (Function) scope.get("getTests", scope);
-                NativeJavaObject obj = (NativeJavaObject) getTests.call(cx, scope, getTests,
-                        new Object[] {new File(file).getName()});
+                NativeJavaObject obj = (NativeJavaObject) getTests.call(
+                        cx, scope, getTests, new Object[] {file});
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
             } catch (RhinoException re) {
