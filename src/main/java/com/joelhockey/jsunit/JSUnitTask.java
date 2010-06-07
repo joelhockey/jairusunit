@@ -59,16 +59,26 @@ public class JSUnitTask extends Java {
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
 
     public void execute() throws BuildException {
+        String todir = "";
+        String basedir = "";
         for (BatchTest batchTest : batchTests) {
-            createArg().setValue("-todir");
-            createArg().setValue(batchTest.todir);
+            todir = setArgIfDifferent("-todir", todir, batchTest.todir);
             for (FileSet fs : batchTest.fileSets) {
                 for (Iterator it = fs.iterator(); it.hasNext(); ) {
                     FileResource fr = (FileResource) it.next();
-                    createArg().setFile(fr.getFile());
+                    basedir = setArgIfDifferent("-basedir", basedir, fr.getBaseDir().toString());
+                    createArg().setValue(fr.getName());
                 }
             }
         }
         executeJava();
+    }
+
+    private String setArgIfDifferent(String argName, String currentValue, String newValue) {
+        if (!newValue.equals(currentValue)) {
+            createArg().setValue(argName);
+            createArg().setValue(newValue);
+        }
+        return newValue;
     }
 }
