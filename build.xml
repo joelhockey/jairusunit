@@ -1,0 +1,63 @@
+<project name="jsunit" default="jar" basedir=".">
+
+  <property name="version" value="1.0" />
+
+  <target name="init">
+    <mkdir dir="target/classes" />
+  </target>
+
+  <target name="compile" depends="init" description="compile">
+    <javac srcdir="src/main/java" destdir="target/classes"
+        debug="on" source="1.5" target="1.5" includeAntRuntime="false">
+      <classpath>
+        <fileset dir="lib" />
+      </classpath>
+    </javac>
+    <copy todir="target/classes">
+      <fileset dir="src/main/resources"/>
+    </copy>
+  </target>
+
+  <!-- example of using jsunit -->
+  <target name="test" depends="compile" description="test">
+    <copy todir="target/test-classes">
+      <fileset dir="src/test/javascript"/>
+    </copy>
+    <taskdef name="jsunit" classname="com.joelhockey.jsunit.JSUnitTask">
+      <classpath> <!-- path to include jsunit.jar -->
+        <pathelement location="target/classes" />
+      </classpath>
+    </taskdef>
+    
+    <jsunit> <!-- optional fork (yes by default) -->
+      <classpath> <!-- path to include jsunit.jar, junit.jar, js.jar, any other java libs for testing -->
+        <pathelement location="target/test-classes" />
+        <pathelement location="target/classes" />
+        <fileset dir="lib" />
+      </classpath>
+      <!-- no need for formatters, plain and xml always done -->
+      <batchtest> <!-- optional 'todir' (target/surefire-reports) by default -->
+        <fileset dir="target/test-classes">
+          <include name="**/*test*.js"/>
+        </fileset>
+      </batchtest>
+    </jsunit>
+    <!-- can create junit report from xml output -->
+    <mkdir dir="target/report/html" />
+    <junitreport todir="target/report">
+      <fileset dir="target/surefire-reports">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="target/report/html"/>
+    </junitreport>
+  </target>
+  
+
+  <target name="jar" depends="compile" description="war">
+    <jar jarfile="target/${ant.project.name}-${version}.jar" basedir="target/classes" />
+  </target>
+
+  <target name="clean" description="clean">
+    <delete dir="target" />
+  </target>
+</project>
