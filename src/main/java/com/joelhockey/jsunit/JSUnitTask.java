@@ -25,13 +25,11 @@
 package com.joelhockey.jsunit;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
-import org.apache.tools.ant.types.resources.FileResource;
 
 /**
  * Ant 'jsunit' task for JSUnit extends from {@link Java}.
@@ -54,6 +52,7 @@ public class JSUnitTask extends Java {
     public JSUnitTask() {
         setClassname(JSUnit.class.getName());
         setFork(true);
+        setFailonerror(true);
     }
 
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
@@ -64,14 +63,13 @@ public class JSUnitTask extends Java {
         for (BatchTest batchTest : batchTests) {
             todir = setArgIfDifferent("-todir", todir, batchTest.todir);
             for (FileSet fs : batchTest.fileSets) {
-                for (Iterator it = fs.iterator(); it.hasNext(); ) {
-                    FileResource fr = (FileResource) it.next();
-                    basedir = setArgIfDifferent("-basedir", basedir, fr.getBaseDir().toString());
-                    createArg().setValue(fr.getName());
+                for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
+                    basedir = setArgIfDifferent("-basedir", basedir, fs.getDir(getProject()).getAbsolutePath());
+                    createArg().setValue(file);
                 }
             }
         }
-        executeJava();
+        super.execute();
     }
 
     private String setArgIfDifferent(String argName, String currentValue, String newValue) {
