@@ -176,6 +176,7 @@ public class JSUnit {
             }
             System.exit(failure ? FAILURE_EXIT : SUCCESS_EXIT);
         } catch (Exception e) {
+            e.printStackTrace();
             System.exit(EXCEPTION_EXIT);
         }
     }
