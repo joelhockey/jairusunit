@@ -118,9 +118,8 @@ JSUnit can be integrated with maven by using the maven-antrun-plugin
 
 Writing Tests with JSUnit
 -------------------------
-JSUnit 
-
 Tests can be defined in a number of different ways:
+
 * defining javascript objects (using function constructor) that start or end with 'Test'
 and naming test methods to start with 'test'
 * global methods starting with 'test'
