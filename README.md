@@ -128,10 +128,10 @@ and naming test methods to start with 'test'
 Examples
 --------
 
-calc.js (to be tested)
+/src/main/javascript/calc.js (to be tested)
     function add(a, b) { return a + b; }
     
-calctest.js
+/src/test/javascript/calctest.js
     load("calc.js");
 
     function CalcWithPTest() {}
