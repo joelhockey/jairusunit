@@ -2,8 +2,6 @@ JSUnit
 ======
 JSUnit is a JavaScript unit testing framework.
 
-It runs in Rhino and requires the junit.jar (version 3 or 4).
-
 JSUnit works by using Rhino's ability to make JavaScript objects
 extend Java classes.  JSUnit forces JavaScript test objects to
 extend the JUnit TestCase class and then uses JUnit to run
