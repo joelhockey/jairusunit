@@ -20,7 +20,8 @@ maven-surefire-plugin.
 
 ant
 ---
-JSUnit defines the jsunit ant taskdef.
+JSUnit defines the jsunit ant taskdef which has many of the same options
+as the junit task.
 
     <!-- example of using jsunit -->
     <target name="test" depends="compile" description="test">
@@ -93,6 +94,26 @@ JSUnit can be integrated with maven by using the maven-antrun-plugin
         
         </plugins>
       </build>
+      
+      <dependencies>
+        <dependency>
+          <groupId>rhino</groupId>
+          <artifactId>js</artifactId>
+          <version>1.7R2</version>
+        </dependency>
+        <dependency>
+          <groupId>com.joelhockey</groupId>
+          <artifactId>jsunit</artifactId>
+          <version>1.0</version>
+          <scope>test</scope>
+        </dependency>
+        <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <version>3.8.1</version>
+          <scope>test</scope>
+        </dependency>
+      </dependencies>      
     </project>
 
 Writing Tests with JSUnit
