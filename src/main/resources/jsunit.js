@@ -82,7 +82,14 @@ function assertMatches() {
     }
 }
 
-function getTests(file) {
+// Return TestSuite containing the following:
+// 1. TestCase for any global functions starting with 'test'
+// 2. TestSuite for any objects or (constructor) functions starting or ending with 'Test'
+// 2a) If TestSuite is not function or object add warning 'Invalid object for TestSuite <name>:<type>'
+// 2b) If TestSuite is constructor function, create new instance and add all 'test*' methods
+// 2c) If TestSuite is object, extend object and add all 'test*' functions
+// 2d) If TestSuite contains no TestCases, add warning 'No tests found in <TestSuite>'
+function jsunitTestSuite(file) {
     var result = new Packages.junit.framework.TestSuite(file);
     try {
         load(file);
@@ -103,61 +110,61 @@ function getTests(file) {
         }
         result.addTest(Packages.junit.framework.TestSuite.warning(msg));
     }
-    result.addTest(new Packages.junit.framework.Test(new JSUnitTestSuite(file + ".global", global(), true)));
-    if (result.countTestCases() == 0) {
-        result.addTest(Packages.junit.framework.TestSuite.warning("No tests found in " + file));
-    }
-    return result;
-}
-
-function JSUnitTestSuite(name, theClass, allowNoTests) {
-    function createTestCase(theClass, className, methodName) {
-        var instance = theClass;
-        if (typeof theClass == "function") {
-            instance = new theClass();
-        } else if (typeof theClass != "object") {
-            return Packages.junit.framework.TestSuite.warning("Invalid JS object for TestCase class: " + theClass);
-        }
+    
+    function createTestCase(instance, className, methodName) {
         instance.toString = function() { return methodName + "(" + className + ")"; };
         var testCase = new Packages.junit.framework.TestCase(instance);
         testCase.setName(methodName);
         return testCase;
     }
-
-    this.name = name;
-    this.tests = [];
-    var instance = theClass;
-    if (typeof theClass == "function") {
-        instance = new theClass();
-    }
-
-    for (var p in instance) {
-        if (/^Test|Test$/.test(p)) {
-            this.tests.push(new JSUnitTestSuite(name + "." + p, instance[p]))
-        } else if (/^test/.test(p) && typeof instance[p] == "function") {
-            var testCase = createTestCase(theClass, name, p)
-            this.tests.push(testCase);
-        }
-    }
-
-    if (!allowNoTests && this.tests.length == 0) {
-        this.tests.push(Packages.junit.framework.TestSuite.warning("No tests found in " + name));
-    }
     
-    this.countTestCases = function() {
-        var count = 0;
-        for (var i = 0; i < this.tests.length; i++) {
-            count += this.tests[i].countTestCases();
-        }
-        return count;
-    };
-    
-    this.run = function(result) {
-        for (var i = 0; i < this.tests.length; i++) {
-            if (result.shouldStop()) {
-                break;
+    var glbl = global();
+    for (var prop in glbl) {
+        // 1. TestCase for any global functions starting with 'test'
+        if (/^test/.test(prop) && typeof glbl[prop] === "function") {
+            var testInstance = {};
+            testInstance[prop] = glbl[prop];
+            result.addTest(createTestCase(testInstance, file + ".global", prop))
+
+        // 2. TestSuite for any objects or (constructor) functions starting or ending with 'Test'
+        } else if (/^Test|Test$/.test(prop)) {
+            var suiteName = file + "." + prop;
+            var testSuite = new Packages.junit.framework.TestSuite(suiteName);
+            var testObj = glbl[prop];
+
+            // 2a) If TestSuite is not function or object add warning 'Invalid object for TestSuite <name>:<type>'
+            if (typeof testObj !== "function" && typeof testObj !== "object") {
+                result.addTest(Packages.junit.framework.TestSuite.warning("Invalid object for TestSuite " + suiteName + ":" + typeof testObj));
+                continue;
             }
-            this.tests[i].run(result);
+
+            // instantiate TestClass if function to ensure prototype and methods are defined
+            var allMethods = typeof testObj === "function" ? new testObj() : testObj;
+
+            for (var testMethod in allMethods) {
+                // only want 'test*' methods
+                if (typeof allMethods[testMethod] === "function" && /^test/.test(testMethod)) {
+                    var testInstance = null;
+                    // 2b) If TestSuite is constructor function, jsunit will 'new' a new instance and add all 'test*' methods
+                    if (typeof testObj === "function") {
+                        testInstance = new testObj();
+
+                    // 2c) If TestSuite is object, extend object and add all 'test*' functions
+                    } else {
+                        var F = function() {};
+                        F.prototype = testObj;
+                        testInstance = new F();
+                    }
+                    testSuite.addTest(createTestCase(testInstance, suiteName, testMethod))
+                }
+            }
+            
+            //   2d) If TestSuite contains no TestCases, add warning 'No tests found in <TestSuite>'
+            if (testSuite.countTestCases() === 0) {
+                testSuite.addTest(Packages.junit.framework.TestSuite.warning("No tests found in " + suiteName));
+            }
+            result.addTest(testSuite);
         }
     }
+    return result;
 }

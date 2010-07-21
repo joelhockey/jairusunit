@@ -32,7 +32,6 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.regex.Pattern;
 
-import junit.framework.Test;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
@@ -92,18 +91,18 @@ public class JSUnit {
      * @param file javascript file containing tests
      * @return test suite
      */
-    public static Test getTests(String file) {
+    public static TestSuite jsunitTestSuite(String file) {
         TestSuite result = new TestSuite("jsunit");
         Context cx = Context.enter();
         try {
-            Function getTests;
+            Function jsunitTestSuite;
             JSUnitScope scope = new JSUnitScope(cx);
             ClassCache.get(scope).setCachingEnabled(false); // need this
             try {
                 scope.load("jsunit.js");
-                getTests = (Function) scope.get("getTests", scope);
-                NativeJavaObject obj = (NativeJavaObject) getTests.call(
-                        cx, scope, getTests, new Object[] {file});
+                jsunitTestSuite = (Function) scope.get("jsunitTestSuite", scope);
+                NativeJavaObject obj = (NativeJavaObject) jsunitTestSuite.call(
+                        cx, scope, jsunitTestSuite, new Object[] {file});
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
             } catch (RhinoException re) {
@@ -134,7 +133,6 @@ public class JSUnit {
      */
     public static void main(String[] args) {
         boolean failure = false;
-        String userDir = System.getProperty("user.dir", "");
         try {
             String todir = "target/surefire-reports";
             String basedir = "";
@@ -153,7 +151,7 @@ public class JSUnit {
                     continue;
                 }
                 // get suite using full filepath
-                Test suite = getTests(basedir + "/" + arg);
+                TestSuite suite = jsunitTestSuite(basedir + "/" + arg);
 
                 // we need to mimic java-style pkgname.classname style to make reports look nice
                 // strip '.js' suffix, exclude basedir, prefix with 'jsunit.' and change slashes to dots

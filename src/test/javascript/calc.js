@@ -1,1 +1,5 @@
-function add(a, b) { return a + b; }
+// example code to be tested
+
+function add(a, b) {
+    return a + b;
+}

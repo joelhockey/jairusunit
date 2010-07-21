@@ -24,6 +24,8 @@
 
 package com.joelhockey.jsunit;
 
+import static java.lang.String.format;
+
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -31,10 +33,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import static java.lang.String.format;
 import junit.framework.AssertionFailedError;
 import junit.framework.Test;
 import junit.framework.TestListener;
+
+import org.mozilla.javascript.JavaScriptException;
+import org.mozilla.javascript.NativeJavaObject;
 
 /**
  * JUnit {@link TestListener} writes ant-junit-style
@@ -148,6 +152,19 @@ public class JSUnitResultWriter implements TestListener {
         testTimes.put(test.toString(), (endTest - startTest));
     }
     public void addError(Test test, Throwable t) {
+        // need to unwrap JUnit AssertionFailedErrors
+        // and register as failure rather than error
+        if (t instanceof JavaScriptException) {
+            JavaScriptException jse = (JavaScriptException)t;
+            if (jse.getValue() instanceof NativeJavaObject) {
+                NativeJavaObject njo = (NativeJavaObject) jse.getValue();
+                Object o = njo.unwrap();
+                if (o instanceof AssertionFailedError) {
+                    addFailure(test, (AssertionFailedError) o);
+                    return;
+                }
+            }
+        }
         errors.put(test.toString(), t);
     }
     public void addFailure(Test test, AssertionFailedError t) {

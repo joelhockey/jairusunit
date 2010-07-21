@@ -29,7 +29,7 @@
       </classpath>
     </taskdef>
     
-    <jsunit> <!-- optional fork (yes by default) -->
+    <jsunit failonerror="no"> <!-- optional fork (default yes), failonerror (default yes) -->
       <classpath> <!-- path to include jsunit.jar, junit.jar, js.jar, any other java libs for testing -->
         <pathelement location="target/test-classes" />
         <pathelement location="target/classes" />

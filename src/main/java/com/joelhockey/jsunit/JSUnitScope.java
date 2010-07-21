@@ -48,6 +48,7 @@ public class JSUnitScope extends ImporterTopLevel {
         String[] names = {
             "load",
             "print",
+            "printf",
             "readFile",
         };
         defineFunctionProperties(names, JSUnitScope.class, ScriptableObject.DONTENUM);
@@ -97,6 +98,14 @@ public class JSUnitScope extends ImporterTopLevel {
             sb.append(Context.toString(args[i]));
         }
         System.out.println(sb);
+    }
+
+    public static String printf(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+        String fstr = (String) args[0];
+        fstr = fstr.replace("%d", "%.0f"); // all numbers will be doubles, so convert here
+        Object[] fargs = new Object[args.length - 1];
+        System.arraycopy(args, 1, fargs, 0, fargs.length);
+        return String.format(fstr, fargs);
     }
 
     /**
