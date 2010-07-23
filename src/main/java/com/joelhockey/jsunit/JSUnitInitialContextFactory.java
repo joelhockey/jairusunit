@@ -1,6 +1,8 @@
 package com.joelhockey.jsunit;
 
+import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -14,32 +16,30 @@ import javax.naming.spi.InitialContextFactory;
 
 
 public class JSUnitInitialContextFactory implements InitialContextFactory {
-    public Context getInitialContext(Hashtable environment) throws NamingException {
-System.out.println("JSUnitInitialContextFactory.getInitialContext");
-        return new JSUnitContext(environment);
+    private static Context ctx = new JSUnitContext();
+
+    public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+        return ctx;
     }
 
-    public static class JSUnitContext implements Context {
-        private Hashtable environment;
-        public JSUnitContext(Hashtable environment) {
-            this.environment = environment;
-        }
+    private static class JSUnitContext implements Context {
+        private Hashtable<String, Object> env = new Hashtable<String, Object>();
 
         public Object addToEnvironment(String propName, Object propVal) throws NamingException {
-            Object old = environment.get(propName);
-            environment.put(propName, propVal);
+            Object old = env.get(propName);
+            env.put(propName, propVal);
             return old;
         }
         public void bind(Name name, Object obj) throws NamingException { throw new OperationNotSupportedException(); }
         public void bind(String name, Object obj) throws NamingException { throw new OperationNotSupportedException(); }
-        public void close() throws NamingException {}
+        public void close() throws NamingException { throw new OperationNotSupportedException(); }
         public Name composeName(Name name, Name prefix) throws NamingException { throw new OperationNotSupportedException(); }
         public String composeName(String name, String prefix) throws NamingException { throw new OperationNotSupportedException(); }
         public Context createSubcontext(Name name) throws NamingException { throw new OperationNotSupportedException(); }
         public Context createSubcontext(String name) throws NamingException { throw new OperationNotSupportedException(); }
         public void destroySubcontext(Name name) throws NamingException { throw new OperationNotSupportedException(); }
         public void destroySubcontext(String name) throws NamingException { throw new OperationNotSupportedException(); }
-        public Hashtable getEnvironment() throws NamingException { return environment; }
+        public Hashtable<String, Object> getEnvironment() throws NamingException { return env; }
         public String getNameInNamespace() throws NamingException { throw new OperationNotSupportedException(); }
         public NameParser getNameParser(Name name) throws NamingException { throw new OperationNotSupportedException(); }
         public NameParser getNameParser(String name) throws NamingException { throw new OperationNotSupportedException(); }
@@ -49,7 +49,7 @@ System.out.println("JSUnitInitialContextFactory.getInitialContext");
         public NamingEnumeration<Binding> listBindings(String name) throws NamingException { throw new OperationNotSupportedException(); }
         public Object lookup(Name name) throws NamingException { throw new OperationNotSupportedException(); }
         public Object lookup(String name) throws NamingException {
-            return environment.get(name);
+            return env.get(name);
         }
         public Object lookupLink(Name name) throws NamingException { throw new OperationNotSupportedException(); }
         public Object lookupLink(String name) throws NamingException { throw new OperationNotSupportedException(); }

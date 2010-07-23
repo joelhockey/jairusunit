@@ -26,6 +26,8 @@ package com.joelhockey.jsunit;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Properties;
+import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
@@ -58,6 +60,14 @@ public class JSUnitTask extends Java {
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
 
     public void execute() throws BuildException {
+        // find all files that end with '.js'
+        // if -Dtest=? set, then filter based on it
+        String filter = ".js";
+        String test = getProject().getProperty("test");
+        if (test != null && !test.endsWith(".js")) {
+            filter = test + ".js";
+        }
+
         String todir = "";
         String basedir = "";
         for (BatchTest batchTest : batchTests) {
@@ -65,7 +75,9 @@ public class JSUnitTask extends Java {
             for (FileSet fs : batchTest.fileSets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     basedir = setArgIfDifferent("-basedir", basedir, fs.getDir(getProject()).getAbsolutePath());
-                    createArg().setValue(file);
+                    if (file.endsWith(filter)) {
+                        createArg().setValue(file);
+                    }
                 }
             }
         }
