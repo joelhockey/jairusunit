@@ -94,20 +94,9 @@ function jsunitTestSuite(file) {
     try {
         load(file);
     } catch (e) {
-        if (e.rhinoException) {
-            var re = e.rhinoException;
-            var msg = "\n\"" + file + "\", line " + re.lineNumber() + ": " + re.details();
-            var ls = re.lineSource();
-            if (ls) {
-                msg += "\n" + ls + "\n" + new String(ls).substring(0, re.columnNumber() - 1).replace(/./g, ".") + "^";
-            }
-        } else {
-            var sw = new java.io.StringWriter("\n");
-            if (e.javaException) {
-                e.javaException.printStackTrace(new java.io.PrintWriter(sw));
-            }
-            msg = "Error loading javascript file: " + file + sw;
-        }
+        var msg = com.joelhockey.jsunit.JSUnit.dumpError(
+                "Error loading javascript file: " + file, file,
+                e.rhinoException || e.javaException || null);
         result.addTest(Packages.junit.framework.TestSuite.warning(msg));
     }
     

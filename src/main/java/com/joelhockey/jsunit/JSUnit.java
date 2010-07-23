@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Arrays;
 import java.util.regex.Pattern;
 
 import junit.framework.TestResult;
@@ -61,14 +60,54 @@ public class JSUnit {
     );
 
     /**
+     * Dump error.
+     * @param notRhinoExceptionMsg msg if throwable is not {@link RhinoException}
+     * @param file javascript filename with error
+     * @param throwable should be {@link Throwable}, with special handling for
+     * {@link RhinoException}
+     * @return formatted message with stack dump
+     */
+    public static String dumpError(String notRhinoExceptionMsg, String file, Object throwable) {
+        StringWriter sw = new StringWriter();
+        if (throwable instanceof RhinoException) {
+            RhinoException re = (RhinoException) throwable;
+            sw.write("\n" + (file != null ? "\"" + file + "\", " : "") + "line " + re.lineNumber() + ": " + re.details());
+            String ls = re.lineSource();
+            if (ls != null) {
+                sw.write("\n" + ls + "\n");
+                for (int i = 0; i < re.columnNumber() - 1; i++) {
+                    sw.write(".");
+                }
+                sw.write("^\n");
+            }
+        } else if (notRhinoExceptionMsg != null) {
+            sw.write(notRhinoExceptionMsg);
+        }
+        if (throwable != null && throwable instanceof Throwable) {
+            ((Throwable) throwable).printStackTrace(new PrintWriter(sw));
+        }
+        return sw.toString();
+    }
+
+    /**
+     * Dump stacktrace to string.
+     * @param t throwable to dump
+     * @return dump of stacktrace
+     */
+    public static String dumpStackTrace(Throwable t) {
+        if (t == null) { return null; }
+        StringWriter sw = new StringWriter();
+        t.printStackTrace(new PrintWriter(sw));
+        return sw.toString();
+    }
+
+    /**
      * Return stacktrace string with uninteresting lines removed.
      * @param t throwable
      * @return stacktrace string with uninteresting lines removed
      */
     public static String filterStackTrace(Throwable t) {
-        StringWriter sw = new StringWriter();
-        t.printStackTrace(new PrintWriter(sw));
-        return filterStackTrace(sw.toString());
+        return filterStackTrace(dumpStackTrace(t));
     }
     /**
      * Return stacktrace string with uninteresting lines removed.
@@ -76,6 +115,7 @@ public class JSUnit {
      * @return stacktrace string with uninteresting lines removed
      */
     public static String filterStackTrace(String stack) {
+        if (stack == null) { return null; }
         StringBuilder result = new StringBuilder();
         for (String line : stack.split("\n")) {
             if (!STACK_TRACE_FILTER.matcher(line).find()) {
@@ -105,18 +145,8 @@ public class JSUnit {
                         cx, scope, jsunitTestSuite, new Object[] {file});
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
-            } catch (RhinoException re) {
-                String msg = String.format("\n\"jsunit.js\", line %d: %s", re.lineNumber(), re.details());
-                if (re.lineSource() != null) {
-                    byte[] dots = new byte[re.columnNumber() - 1];
-                    Arrays.fill(dots, (byte) '.');
-                    msg += "\n" + re.lineSource() + "\n" + new String(dots) + "^";
-                }
-                result.addTest(TestSuite.warning(msg));
             } catch (Exception e) {
-                StringWriter sw = new StringWriter();
-                e.printStackTrace(new PrintWriter(sw));
-                result.addTest(TestSuite.warning("Error loading jsunit.js\n" + sw));
+                result.addTest(TestSuite.warning(JSUnit.dumpError("Error loading jsunit.js", "jsunit.js", e)));
             }
         } finally {
             Context.exit();

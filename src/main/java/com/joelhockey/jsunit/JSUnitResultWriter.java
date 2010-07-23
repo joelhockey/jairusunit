@@ -27,6 +27,7 @@ package com.joelhockey.jsunit;
 import static java.lang.String.format;
 
 import java.io.PrintStream;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -82,6 +83,7 @@ public class JSUnitResultWriter implements TestListener {
 
     public void endTestSuite(String name) {
         endSuite = System.currentTimeMillis();
+        // summary
         if (summary != null) {
             summary.println(format("Tests run: %d, Failures: %d, Errors: %d, Time elapsed: %.3f",
                     tests.size(), failures.size(), errors.size(), (endSuite - startSuite) / 1000.0));
@@ -90,10 +92,12 @@ public class JSUnitResultWriter implements TestListener {
                     summary.println(format("Test %s\n\tFAILED: %s", test, failures.get(test).getMessage()));
                 }
                 if (errors.containsKey(test)) {
-                    summary.println(format("Test %s\n\tERROR: %s", test, errors.get(test).getMessage()));
+                    summary.println(format("Test %s\n\tERROR: %s", test, JSUnit.dumpError(null, null, errors.get(test))));
                 }
             }
         }
+
+        // plain
         if (plain != null) {
             plain.println(format("Tests run: %d, Failures: %d, Errors: %d, Time elapsed: %.3f\n",
                     tests.size(), failures.size(), errors.size(), (endSuite - startSuite) / 1000.0));
@@ -105,10 +109,12 @@ public class JSUnitResultWriter implements TestListener {
                 }
                 if (errors.containsKey(test)) {
                     plain.println("\tCaused an ERROR");
-                    plain.println(JSUnit.filterStackTrace(errors.get(test)));
+                    plain.println(JSUnit.dumpError(null, null, errors.get(test)));
                 }
             }
         }
+
+        // xml
         if (xml != null) {
             xml.println("<?xml version=\"1.0\" encoding=\"UTF-8\" ?>");
             xml.println(format("<testsuite name=\"%s\" skipped=\"0\" tests=\"%d\" errors=\"%d\" time=\"%.3f\" failures=\"%d\">",
@@ -122,11 +128,13 @@ public class JSUnitResultWriter implements TestListener {
             for (String test : tests) {
                 xml.print(format("  <testcase classname=\"%s\" name=\"%s\" time=\"%.3f\"",
                         test, test, testTimes.get(test) / 1000.0));
-                String failureOrError = "failure";
                 Throwable t = failures.get(test);
+                String failureOrError = "failure";
+                String stack = JSUnit.filterStackTrace(t); // filter failures
                 if (t == null) {
                     t = errors.get(test);
                     failureOrError = "error";
+                    stack = JSUnit.dumpError("", null, t);  // full dump for errors
                 }
 
                 if (t == null) {
@@ -135,7 +143,7 @@ public class JSUnitResultWriter implements TestListener {
                     xml.println(">");
                     xml.println(format("    <%s type=\"%s\" message=\"%s\">%s</%s>",
                             failureOrError, esc(t.getClass().getName()), esc(t.getMessage()),
-                            esc(JSUnit.filterStackTrace(t)), failureOrError));
+                            esc(stack), failureOrError));
                     xml.println(format("  </testcase>"));
                 }
             }
@@ -152,16 +160,22 @@ public class JSUnitResultWriter implements TestListener {
         testTimes.put(test.toString(), (endTest - startTest));
     }
     public void addError(Test test, Throwable t) {
-        // need to unwrap JUnit AssertionFailedErrors
-        // and register as failure rather than error
+        StringWriter sw = new StringWriter();
+        sw.write(test.toString());
+
+        // need to unwrap Throwable if it is JavaScriptException
+        // if unwrapped is JUnit AssertionFailedErrors,
+        // then register as failure rather than error
         if (t instanceof JavaScriptException) {
-            JavaScriptException jse = (JavaScriptException)t;
+            JavaScriptException jse = (JavaScriptException) t;
             if (jse.getValue() instanceof NativeJavaObject) {
                 NativeJavaObject njo = (NativeJavaObject) jse.getValue();
                 Object o = njo.unwrap();
                 if (o instanceof AssertionFailedError) {
                     addFailure(test, (AssertionFailedError) o);
                     return;
+                } else if (o instanceof Throwable) { // root cause
+                    t = (Throwable) o;
                 }
             }
         }
