@@ -60,12 +60,10 @@ public class JSUnitTask extends Java {
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
 
     public void execute() throws BuildException {
-        // find all files that end with '.js'
         // if -Dtest=? set, then filter based on it
-        String filter = ".js";
         String test = getProject().getProperty("test");
         if (test != null && !test.endsWith(".js")) {
-            filter = test + ".js";
+            test += ".js";
         }
 
         String todir = "";
@@ -75,7 +73,7 @@ public class JSUnitTask extends Java {
             for (FileSet fs : batchTest.fileSets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
                     basedir = setArgIfDifferent("-basedir", basedir, fs.getDir(getProject()).getAbsolutePath());
-                    if (file.endsWith(filter)) {
+                    if (test == null || file.equals(test)) {
                         createArg().setValue(file);
                     }
                 }
