@@ -29,7 +29,6 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
 import junit.framework.Assert;
@@ -82,11 +81,15 @@ public class JSUnit {
      * {@link RhinoException}
      * @return formatted message with stack dump
      */
-    public static String dumpError(String notRhinoExceptionMsg, String file, Object throwable) {
+    public static String dumpError(String notRhinoExceptionMsg, Object throwable) {
         StringWriter sw = new StringWriter();
         if (throwable instanceof RhinoException) {
             RhinoException re = (RhinoException) throwable;
-            sw.write("\n" + (file != null ? "\"" + file + "\", " : "") + "line " + re.lineNumber() + ": " + re.details());
+            String filename = "";
+            if (re.sourceName() != null) {
+                filename = "\"" + re.sourceName() + "\", ";
+            }
+            sw.write("\n" + filename + "line " + re.lineNumber() + ": " + re.details());
             String ls = re.lineSource();
             if (ls != null) {
                 sw.write("\n" + ls + "\n");
@@ -161,7 +164,7 @@ public class JSUnit {
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
             } catch (Exception e) {
-                String msg = JSUnit.dumpError("Error loading jsunit.js", "jsunit.js", e);
+                String msg = JSUnit.dumpError("Error loading jsunit.js", e);
                 result.addTest(JSUnit.warning(msg));
             }
         } finally {

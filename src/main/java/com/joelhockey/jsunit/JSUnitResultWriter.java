@@ -92,7 +92,7 @@ public class JSUnitResultWriter implements TestListener {
                     summary.println(format("Test %s\n\tFAILED: %s", test, failures.get(test).getMessage()));
                 }
                 if (errors.containsKey(test)) {
-                    summary.println(format("Test %s\n\tERROR: %s", test, JSUnit.dumpError(null, null, errors.get(test))));
+                    summary.println(format("Test %s\n\tERROR: %s", test, JSUnit.dumpError(null, errors.get(test))));
                 }
             }
         }
@@ -109,7 +109,7 @@ public class JSUnitResultWriter implements TestListener {
                 }
                 if (errors.containsKey(test)) {
                     plain.println("\tCaused an ERROR");
-                    plain.println(JSUnit.dumpError(null, null, errors.get(test)));
+                    plain.println(JSUnit.dumpError(null, errors.get(test)));
                 }
             }
         }
@@ -134,7 +134,7 @@ public class JSUnitResultWriter implements TestListener {
                 if (t == null) {
                     t = errors.get(test);
                     failureOrError = "error";
-                    stack = JSUnit.dumpError("", null, t);  // full dump for errors
+                    stack = JSUnit.dumpError(null, t);  // full dump for errors
                 }
 
                 if (t == null) {

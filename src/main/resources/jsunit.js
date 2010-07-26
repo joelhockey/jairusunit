@@ -95,7 +95,7 @@ function jsunitTestSuite(file) {
         load(file);
     } catch (e) {
         var msg = com.joelhockey.jsunit.JSUnit.dumpError(
-                "Error loading javascript file: " + file, file,
+                "Error loading javascript file: " + file,
                 e.rhinoException || e.javaException || null);
         result.addTest(com.joelhockey.jsunit.JSUnit.warning(msg));
     }
