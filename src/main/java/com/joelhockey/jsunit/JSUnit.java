@@ -29,8 +29,12 @@ import java.io.FileOutputStream;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.lang.reflect.Method;
 import java.util.regex.Pattern;
 
+import junit.framework.Assert;
+import junit.framework.Test;
+import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
@@ -58,6 +62,17 @@ public class JSUnit {
                 "|com.joelhockey.jsunit" +
             ")"
     );
+
+    /**
+     * Returns a test which will fail and log a warning message.
+     */
+    public static Test warning(final String msg) {
+        return new TestCase("warning") {
+            protected void runTest() {
+                Assert.fail(msg);
+            }
+        };
+    }
 
     /**
      * Dump error.
@@ -146,7 +161,8 @@ public class JSUnit {
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
             } catch (Exception e) {
-                result.addTest(TestSuite.warning(JSUnit.dumpError("Error loading jsunit.js", "jsunit.js", e)));
+                String msg = JSUnit.dumpError("Error loading jsunit.js", "jsunit.js", e);
+                result.addTest(JSUnit.warning(msg));
             }
         } finally {
             Context.exit();

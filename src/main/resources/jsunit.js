@@ -97,7 +97,7 @@ function jsunitTestSuite(file) {
         var msg = com.joelhockey.jsunit.JSUnit.dumpError(
                 "Error loading javascript file: " + file, file,
                 e.rhinoException || e.javaException || null);
-        result.addTest(Packages.junit.framework.TestSuite.warning(msg));
+        result.addTest(com.joelhockey.jsunit.JSUnit.warning(msg));
     }
     
     function createTestCase(instance, className, methodName) {
@@ -123,7 +123,7 @@ function jsunitTestSuite(file) {
 
             // 2a) If TestSuite is not function or object add warning 'Invalid object for TestSuite <name>:<type>'
             if (typeof testObj !== "function" && typeof testObj !== "object") {
-                result.addTest(Packages.junit.framework.TestSuite.warning("Invalid object for TestSuite " + suiteName + ":" + typeof testObj));
+                result.addTest(com.joelhockey.jsunit.JSUnit.warning("Invalid object for TestSuite " + suiteName + ":" + typeof testObj));
                 continue;
             }
 
@@ -150,7 +150,7 @@ function jsunitTestSuite(file) {
             
             //   2d) If TestSuite contains no TestCases, add warning 'No tests found in <TestSuite>'
             if (testSuite.countTestCases() === 0) {
-                testSuite.addTest(Packages.junit.framework.TestSuite.warning("No tests found in " + suiteName));
+                testSuite.addTest(com.joelhockey.jsunit.JSUnit.warning("No tests found in " + suiteName));
             }
             result.addTest(testSuite);
         }
