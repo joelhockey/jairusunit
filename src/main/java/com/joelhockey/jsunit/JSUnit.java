@@ -102,6 +102,7 @@ public class JSUnit {
             sw.write(notRhinoExceptionMsg);
         }
         if (throwable != null && throwable instanceof Throwable) {
+            sw.write('\n');
             ((Throwable) throwable).printStackTrace(new PrintWriter(sw));
         }
         return sw.toString();
