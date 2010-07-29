@@ -234,23 +234,20 @@ It will produce a text and xml formatted report in the target/surefire-reports d
 The text output is:
     $ cat target/surefire-reports/TEST-jairusunit.calctest.txt
     Testsuite: jairusunit.calctest
-    Tests run: 12, Failures: 4, Errors: 4, Time elapsed: 0.000
-
+    Tests run: 12, Failures: 4, Errors: 4, Time elapsed: 0.016
+    
     Testcase: testAddSuccess(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.TestObjectLiteral) took 0.000 sec
     Testcase: testAddFail(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.TestObjectLiteral) took 0.000 sec
         FAILED
     junit.framework.AssertionFailedError: expected:<1> but was:<2>
-        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
-        at org.mozilla.javascript.NativeJavaClass.constructSpecific(NativeJavaClass.java:281)
-        at org.mozilla.javascript.NativeJavaClass.construct(NativeJavaClass.java:200)
         at org.mozilla.javascript.gen.c2._c14(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:55)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at adapter2.testAddFail(<adapter>)
-
-    Testcase: testAddError(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.TestObjectLiteral) took 0.000 sec
+    
+    Testcase: testAddError(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.TestObjectLiteral) took 0.016 sec
         Caused an ERROR
-
+    
     java.lang.Exception: test exception
         at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
         at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
@@ -287,22 +284,19 @@ The text output is:
         at junit.framework.TestSuite.runTest(TestSuite.java:230)
         at junit.framework.TestSuite.run(TestSuite.java:225)
         at com.joelhockey.jairusunit.JairusUnit.main(JairusUnit.java:215)
-
+    
     Testcase: testAddSuccess(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithMethodsTest) took 0.000 sec
     Testcase: testAddFail(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithMethodsTest) took 0.000 sec
         FAILED
     junit.framework.AssertionFailedError: 3==2
-        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
-        at org.mozilla.javascript.NativeJavaClass.constructSpecific(NativeJavaClass.java:281)
-        at org.mozilla.javascript.NativeJavaClass.construct(NativeJavaClass.java:200)
         at org.mozilla.javascript.gen.c2._c11(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:44)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at adapter5.testAddFail(<adapter>)
-
+    
     Testcase: testAddError(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithMethodsTest) took 0.000 sec
         Caused an ERROR
-
+    
     "C:\java\joelhockey\jairusunit\target\test-classes/calctest.js", line 47: [object Error]
     org.mozilla.javascript.JavaScriptException: [object Error] (C:\java\joelhockey\jairusunit\target\test-classes/calctest.js#47)
         at org.mozilla.javascript.gen.c2._c12(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:47)
@@ -332,22 +326,19 @@ The text output is:
         at junit.framework.TestSuite.runTest(TestSuite.java:230)
         at junit.framework.TestSuite.run(TestSuite.java:225)
         at com.joelhockey.jairusunit.JairusUnit.main(JairusUnit.java:215)
-
+    
     Testcase: testAddSuccess(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithPrototypeTest) took 0.000 sec
     Testcase: testAddFail(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithPrototypeTest) took 0.000 sec
         FAILED
     junit.framework.AssertionFailedError: expected:<11> but was:<2>
-        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
-        at org.mozilla.javascript.NativeJavaClass.constructSpecific(NativeJavaClass.java:281)
-        at org.mozilla.javascript.NativeJavaClass.construct(NativeJavaClass.java:200)
         at org.mozilla.javascript.gen.c2._c6(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:27)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at adapter8.testAddFail(<adapter>)
-
+    
     Testcase: testAddError(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.FunctionWithPrototypeTest) took 0.000 sec
         Caused an ERROR
-
+    
     java.lang.Exception: throwing a java exception
         at sun.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
         at sun.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:39)
@@ -384,10 +375,10 @@ The text output is:
         at junit.framework.TestSuite.runTest(TestSuite.java:230)
         at junit.framework.TestSuite.run(TestSuite.java:225)
         at com.joelhockey.jairusunit.JairusUnit.main(JairusUnit.java:215)
-
+    
     Testcase: testAddError(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.global) took 0.000 sec
         Caused an ERROR
-
+    
     "C:\java\joelhockey\jairusunit\target\test-classes/calctest.js", line 17: [object Error]
     org.mozilla.javascript.JavaScriptException: [object Error] (C:\java\joelhockey\jairusunit\target\test-classes/calctest.js#17)
         at org.mozilla.javascript.gen.c2._c3(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:17)
@@ -415,18 +406,15 @@ The text output is:
         at junit.framework.TestSuite.runTest(TestSuite.java:230)
         at junit.framework.TestSuite.run(TestSuite.java:225)
         at com.joelhockey.jairusunit.JairusUnit.main(JairusUnit.java:215)
-
+    
     Testcase: testAddFail(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.global) took 0.000 sec
         FAILED
     junit.framework.AssertionFailedError: expected:<-2> but was:<2>
-        at java.lang.reflect.Constructor.newInstance(Constructor.java:513)
-        at org.mozilla.javascript.NativeJavaClass.constructSpecific(NativeJavaClass.java:281)
-        at org.mozilla.javascript.NativeJavaClass.construct(NativeJavaClass.java:200)
         at org.mozilla.javascript.gen.c2._c2(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js:13)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at org.mozilla.javascript.gen.c2.call(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js)
         at adapter11.testAddFail(<adapter>)
-
+    
     Testcase: testAddSuccess(C:\java\joelhockey\jairusunit\target\test-classes/calctest.js.global) took 0.000 sec
 
     

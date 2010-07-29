@@ -54,8 +54,8 @@ public class JairusUnit {
 
     public static final Pattern STACK_TRACE_FILTER = Pattern.compile(
             "^\tat (" +
-                "junit|java.lang.reflect.Method.invoke\\(" +
-                "|org.mozilla.javascript.(Context|JavaAdapter|MemberBox|NativeJavaMethod|[Oo]ptimizer|ScriptRuntime|.*jairusunit.js)" +
+                "junit|java.lang.reflect" +
+                "|org.mozilla.javascript.(Context|JavaAdapter|MemberBox|NativeJava|[Oo]ptimizer|ScriptRuntime|.*jairusunit.js)" +
                 "|sun.reflect" +
                 "|org.apache.tools.ant" +
                 "|com.joelhockey.jairusunit" +
