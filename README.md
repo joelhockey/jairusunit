@@ -1,7 +1,14 @@
 JairusUnit
-======
-JairusUnit is a JavaScript unit testing framework that uses Rhino and JUnit.
+==========
+JairusUnit is a JavaScript server-side unit testing framework that uses Rhino and JUnit.
 
+Copyright and Licence
+---------------------
+Copyright Joel Hockey
+MIT Licence
+
+How it Works
+------------
 JairusUnit uses Rhino's ability to make JavaScript objects
 extend Java classes.  It coerces JavaScript test objects to
 extend the JUnit TestCase class and then uses JUnit to run
