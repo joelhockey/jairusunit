@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.joelhockey.jsunit;
+package com.joelhockey.jairusunit;
 
 import static java.lang.String.format;
 
@@ -42,11 +42,10 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 
 /**
- * JUnit {@link TestListener} writes ant-junit-style
- * 'summary', 'plain' and 'xml' reports.
+ * Writes ant junit style 'summary', 'plain' and 'xml' reports.
  * @author Joel Hockey
  */
-public class JSUnitResultWriter implements TestListener {
+public class JairusUnitResultWriter implements TestListener {
     private PrintStream summary;
     private PrintStream plain;
     private PrintStream xml;
@@ -60,10 +59,10 @@ public class JSUnitResultWriter implements TestListener {
     private long startTest;
     private long endTest;
 
-    public JSUnitResultWriter() {
+    public JairusUnitResultWriter() {
         this(System.out, null, null);
     }
-    public JSUnitResultWriter(PrintStream summary, PrintStream plain, PrintStream xml) {
+    public JairusUnitResultWriter(PrintStream summary, PrintStream plain, PrintStream xml) {
         this.summary = summary;
         this.plain = plain;
         this.xml = xml;
@@ -92,7 +91,7 @@ public class JSUnitResultWriter implements TestListener {
                     summary.println(format("Test %s\n\tFAILED: %s", test, failures.get(test).getMessage()));
                 }
                 if (errors.containsKey(test)) {
-                    summary.println(format("Test %s\n\tERROR: %s", test, JSUnit.dumpError(null, errors.get(test))));
+                    summary.println(format("Test %s\n\tERROR: %s", test, JairusUnit.dumpError(null, errors.get(test))));
                 }
             }
         }
@@ -105,11 +104,11 @@ public class JSUnitResultWriter implements TestListener {
                 plain.println(format("Testcase: %s took %.3f sec", test, testTimes.get(test) / 1000.0));
                 if (failures.containsKey(test)) {
                     plain.println("\tFAILED");
-                    plain.println(JSUnit.filterStackTrace(failures.get(test)));
+                    plain.println(JairusUnit.filterStackTrace(failures.get(test)));
                 }
                 if (errors.containsKey(test)) {
                     plain.println("\tCaused an ERROR");
-                    plain.println(JSUnit.dumpError(null, errors.get(test)));
+                    plain.println(JairusUnit.dumpError(null, errors.get(test)));
                 }
             }
         }
@@ -130,11 +129,11 @@ public class JSUnitResultWriter implements TestListener {
                         test, test, testTimes.get(test) / 1000.0));
                 Throwable t = failures.get(test);
                 String failureOrError = "failure";
-                String stack = JSUnit.filterStackTrace(t); // filter failures
+                String stack = JairusUnit.filterStackTrace(t); // filter failures
                 if (t == null) {
                     t = errors.get(test);
                     failureOrError = "error";
-                    stack = JSUnit.dumpError(null, t);  // full dump for errors
+                    stack = JairusUnit.dumpError(null, t);  // full dump for errors
                 }
 
                 if (t == null) {

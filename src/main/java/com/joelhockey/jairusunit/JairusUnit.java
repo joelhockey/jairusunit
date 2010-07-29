@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.joelhockey.jsunit;
+package com.joelhockey.jairusunit;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -44,10 +44,10 @@ import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.RhinoException;
 
 /**
- * Main class to execute JSUnit.  Takes names of js files as args.
+ * Main class to execute JairusUnit.  Takes names of js files as args.
  * @author Joel Hockey
  */
-public class JSUnit {
+public class JairusUnit {
     public static final int SUCCESS_EXIT = 0;
     public static final int FAILURE_EXIT = 1;
     public static final int EXCEPTION_EXIT = 2;
@@ -55,16 +55,14 @@ public class JSUnit {
     public static final Pattern STACK_TRACE_FILTER = Pattern.compile(
             "^\tat (" +
                 "junit|java.lang.reflect.Method.invoke\\(" +
-                "|org.mozilla.javascript.(Context|JavaAdapter|MemberBox|NativeJavaMethod|[Oo]ptimizer|ScriptRuntime|.*jsunit.js)" +
+                "|org.mozilla.javascript.(Context|JavaAdapter|MemberBox|NativeJavaMethod|[Oo]ptimizer|ScriptRuntime|.*jairusunit.js)" +
                 "|sun.reflect" +
                 "|org.apache.tools.ant" +
-                "|com.joelhockey.jsunit" +
+                "|com.joelhockey.jairusunit" +
             ")"
     );
 
-    /**
-     * Returns a test which will fail and log a warning message.
-     */
+    /** Returns a test which will fail and log a warning message. */
     public static Test warning(final String msg) {
         return new TestCase("warning") {
             protected void runTest() {
@@ -150,23 +148,23 @@ public class JSUnit {
      * @param file javascript file containing tests
      * @return test suite
      */
-    public static TestSuite jsunitTestSuite(String file) {
-        TestSuite result = new TestSuite("jsunit");
+    public static TestSuite jairusunitTestSuite(String file) {
+        TestSuite result = new TestSuite("jairusunit");
         Context cx = Context.enter();
         try {
-            Function jsunitTestSuite;
-            JSUnitScope scope = new JSUnitScope(cx);
+            Function jairusunitTestSuite;
+            JairusUnitScope scope = new JairusUnitScope(cx);
             ClassCache.get(scope).setCachingEnabled(false); // need this
             try {
-                scope.load("jsunit.js");
-                jsunitTestSuite = (Function) scope.get("jsunitTestSuite", scope);
-                NativeJavaObject obj = (NativeJavaObject) jsunitTestSuite.call(
-                        cx, scope, jsunitTestSuite, new Object[] {file});
+                scope.load("jairusunit.js");
+                jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
+                NativeJavaObject obj = (NativeJavaObject) jairusunitTestSuite.call(
+                        cx, scope, jairusunitTestSuite, new Object[] {file});
                 TestSuite suite = (TestSuite) obj.unwrap();
                 result.addTest(suite);
             } catch (Exception e) {
-                String msg = JSUnit.dumpError("Error loading jsunit.js", e);
-                result.addTest(JSUnit.warning(msg));
+                String msg = JairusUnit.dumpError("Error loading jairusunit.js", e);
+                result.addTest(JairusUnit.warning(msg));
             }
         } finally {
             Context.exit();
@@ -201,16 +199,16 @@ public class JSUnit {
                     continue;
                 }
                 // get suite using full filepath
-                TestSuite suite = jsunitTestSuite(basedir + "/" + arg);
+                TestSuite suite = jairusunitTestSuite(basedir + "/" + arg);
 
                 // we need to mimic java-style pkgname.classname style to make reports look nice
-                // strip '.js' suffix, exclude basedir, prefix with 'jsunit.' and change slashes to dots
-                String testName = "jsunit." + arg.replaceAll("\\.js$", "").replaceAll("/|\\\\", ".");
+                // strip '.js' suffix, exclude basedir, prefix with 'jairusunit.' and change slashes to dots
+                String testName = "jairusunit." + arg.replaceAll("\\.js$", "").replaceAll("/|\\\\", ".");
 
                 // always write plain and xml reports - don't bother making people choose
                 PrintStream plain = new PrintStream(new FileOutputStream(todir + "/TEST-" + testName + ".txt"), true, "UTF-8");
                 PrintStream xml = new PrintStream(new FileOutputStream(todir + "/TEST-" + testName + ".xml"), true, "UTF-8");;
-                JSUnitResultWriter printer = new JSUnitResultWriter(System.out, plain, xml);
+                JairusUnitResultWriter printer = new JairusUnitResultWriter(System.out, plain, xml);
                 TestResult result = new TestResult();
                 result.addListener(printer);
                 printer.startTestSuite(testName);

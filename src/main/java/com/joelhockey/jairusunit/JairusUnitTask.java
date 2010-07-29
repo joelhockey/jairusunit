@@ -22,25 +22,23 @@
  * THE SOFTWARE.
  */
 
-package com.joelhockey.jsunit;
+package com.joelhockey.jairusunit;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Properties;
-import java.util.regex.Pattern;
 
 import org.apache.tools.ant.BuildException;
 import org.apache.tools.ant.taskdefs.Java;
 import org.apache.tools.ant.types.FileSet;
 
 /**
- * Ant 'jsunit' task for JSUnit extends from {@link Java}.
+ * Ant 'jairusunit' task for JairusUnit extends from {@link Java}.
  * Supports similar format to 'junit' task, including
  * nested 'batchtest' elements and forking (fork once is default).
  * Always does plain and xml reports.
  * @author Joel Hockey
  */
-public class JSUnitTask extends Java {
+public class JairusUnitTask extends Java {
     public static class BatchTest {
         public String todir = "target/surefire-reports";
         public List<FileSet> fileSets = new ArrayList<FileSet>();
@@ -51,14 +49,15 @@ public class JSUnitTask extends Java {
     }
 
     private List<BatchTest> batchTests = new ArrayList<BatchTest>();
-    public JSUnitTask() {
-        setClassname(JSUnit.class.getName());
+    public JairusUnitTask() {
+        setClassname(JairusUnit.class.getName());
         setFork(true);
         setFailonerror(true);
     }
 
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
 
+    @Override
     public void execute() throws BuildException {
         // if -Dtest=? set, then filter based on it
         String test = getProject().getProperty("test");

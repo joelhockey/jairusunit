@@ -22,7 +22,7 @@
  * THE SOFTWARE.
  */
 
-package com.joelhockey.jsunit;
+package com.joelhockey.jairusunit;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -39,11 +39,13 @@ import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.ScriptableObject;
 
 /**
- * Rhino global scope for JSUnit.
+ * Rhino global scope for JairusUnit.
  * @author Joel Hockey
  */
-public class JSUnitScope extends ImporterTopLevel {
-    public JSUnitScope(Context cx) {
+public class JairusUnitScope extends ImporterTopLevel {
+    private static final long serialVersionUID = 0x37A5FBB0114CDFECL;
+
+    public JairusUnitScope(Context cx) {
         super(cx);
         String[] names = {
             "load",
@@ -51,7 +53,7 @@ public class JSUnitScope extends ImporterTopLevel {
             "printf",
             "readFile",
         };
-        defineFunctionProperties(names, JSUnitScope.class, ScriptableObject.DONTENUM);
+        defineFunctionProperties(names, JairusUnitScope.class, ScriptableObject.DONTENUM);
      }
 
     /**
@@ -70,9 +72,9 @@ public class JSUnitScope extends ImporterTopLevel {
             ins = new FileInputStream(f);
         // else, try a resource
         } else {
-            ins = JSUnitScope.class.getResourceAsStream(path);
+            ins = JairusUnitScope.class.getResourceAsStream(path);
             if (ins == null && !path.startsWith("/")) {
-                ins = JSUnitScope.class.getResourceAsStream("/" + path);
+                ins = JairusUnitScope.class.getResourceAsStream("/" + path);
             }
             if (ins == null) {
                 throw new IOException("Could not find file: " + path);
@@ -124,9 +126,9 @@ public class JSUnitScope extends ImporterTopLevel {
             ins = new FileInputStream(f);
         // else, try a resource
         } else {
-            ins = JSUnitScope.class.getResourceAsStream(path);
+            ins = JairusUnitScope.class.getResourceAsStream(path);
             if (ins == null && !path.startsWith("/")) {
-                ins = JSUnitScope.class.getResourceAsStream("/" + path);
+                ins = JairusUnitScope.class.getResourceAsStream("/" + path);
             }
             if (ins == null) {
                 throw new IOException("Could not find file: " + path);

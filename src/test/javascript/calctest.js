@@ -1,4 +1,4 @@
-// Example of how to use JSUnit
+// Example of how to use JairusUnit
 // There are 4 styles of test cases that can be used.
 
 // load file to test
@@ -33,7 +33,7 @@ FunctionWithPrototypeTest.prototype = {
 
 // 3. Constructor functions that define their methods at construction time
 function FunctionWithMethodsTest() {
-    // note that JSUnit supports setUp and tearDown methods
+    // note that JairuSUnit supports setUp and tearDown methods
     this.setUp = function() {
         this.addresult = add(1,1);
     };

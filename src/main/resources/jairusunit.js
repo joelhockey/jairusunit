@@ -89,15 +89,15 @@ function assertMatches() {
 // 2b) If TestSuite is constructor function, create new instance and add all 'test*' methods
 // 2c) If TestSuite is object, extend object and add all 'test*' functions
 // 2d) If TestSuite contains no TestCases, add warning 'No tests found in <TestSuite>'
-function jsunitTestSuite(file) {
+function jairusunitTestSuite(file) {
     var result = new Packages.junit.framework.TestSuite(file);
     try {
         load(file);
     } catch (e) {
-        var msg = com.joelhockey.jsunit.JSUnit.dumpError(
+        var msg = com.joelhockey.jairusunit.JairusUnit.dumpError(
                 "Error loading javascript file: " + file,
                 e.rhinoException || e.javaException || null);
-        result.addTest(com.joelhockey.jsunit.JSUnit.warning(msg));
+        result.addTest(com.joelhockey.jairusunit.JairusUnit.warning(msg));
     }
     
     function createTestCase(instance, className, methodName) {
@@ -123,7 +123,7 @@ function jsunitTestSuite(file) {
 
             // 2a) If TestSuite is not function or object add warning 'Invalid object for TestSuite <name>:<type>'
             if (typeof testObj !== "function" && typeof testObj !== "object") {
-                result.addTest(com.joelhockey.jsunit.JSUnit.warning("Invalid object for TestSuite " + suiteName + ":" + typeof testObj));
+                result.addTest(com.joelhockey.jairusunit.JairusUnit.warning("Invalid object for TestSuite " + suiteName + ":" + typeof testObj));
                 continue;
             }
 
@@ -134,7 +134,7 @@ function jsunitTestSuite(file) {
                 // only want 'test*' methods
                 if (typeof allMethods[testMethod] === "function" && /^test/.test(testMethod)) {
                     var testInstance = null;
-                    // 2b) If TestSuite is constructor function, jsunit will 'new' a new instance and add all 'test*' methods
+                    // 2b) If TestSuite is constructor function, jairusunit will 'new' a new instance and add all 'test*' methods
                     if (typeof testObj === "function") {
                         testInstance = new testObj();
 
@@ -150,7 +150,7 @@ function jsunitTestSuite(file) {
             
             //   2d) If TestSuite contains no TestCases, add warning 'No tests found in <TestSuite>'
             if (testSuite.countTestCases() === 0) {
-                testSuite.addTest(com.joelhockey.jsunit.JSUnit.warning("No tests found in " + suiteName));
+                testSuite.addTest(com.joelhockey.jairusunit.JairusUnit.warning("No tests found in " + suiteName));
             }
             result.addTest(testSuite);
         }

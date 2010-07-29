@@ -1,4 +1,4 @@
-<project name="jsunit" default="jar" basedir=".">
+<project name="jairusunit" default="jar" basedir=".">
 
   <property name="version" value="1.0" />
 
@@ -18,19 +18,19 @@
     </copy>
   </target>
 
-  <!-- example of using jsunit -->
+  <!-- example of using jairusunit -->
   <target name="test" depends="compile" description="test">
     <copy todir="target/test-classes">
       <fileset dir="src/test/javascript"/>
     </copy>
-    <taskdef name="jsunit" classname="com.joelhockey.jsunit.JSUnitTask">
-      <classpath> <!-- path to include jsunit.jar -->
+    <taskdef name="jairusunit" classname="com.joelhockey.jairusunit.JairusUnitTask">
+      <classpath> <!-- path to include jairusunit.jar -->
         <pathelement location="target/classes" />
       </classpath>
     </taskdef>
     
-    <jsunit failonerror="no"> <!-- optional fork (default yes), failonerror (default yes) -->
-      <classpath> <!-- path to include jsunit.jar, junit.jar, js.jar, any other java libs for testing -->
+    <jairusunit failonerror="no"> <!-- optional fork (default yes), failonerror (default yes) -->
+      <classpath> <!-- path to include jairusunit.jar, junit.jar, js.jar, any other java libs for testing -->
         <pathelement location="target/test-classes" />
         <pathelement location="target/classes" />
         <fileset dir="lib" />
@@ -41,8 +41,8 @@
           <include name="**/*test*.js"/>
         </fileset>
       </batchtest>
-    </jsunit>
-    <!-- can create junit report from xml output -->
+    </jairusunit>
+    <!-- can create junit report from xml output using standard 'junitreport' task -->
     <mkdir dir="target/report/html" />
     <junitreport todir="target/report">
       <fileset dir="target/surefire-reports">
@@ -52,7 +52,6 @@
     </junitreport>
   </target>
   
-
   <target name="jar" depends="compile" description="war">
     <jar jarfile="target/${ant.project.name}-${version}.jar" basedir="target/classes" />
   </target>

@@ -1,8 +1,30 @@
-package com.joelhockey.jsunit;
+/*
+ * The MIT Licence
+ *
+ * Copyright 2010 Joel Hockey (joel.hockey@gmail.com).  All rights reserved.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 
-import java.util.HashMap;
+package com.joelhockey.jairusunit;
+
 import java.util.Hashtable;
-import java.util.Map;
 
 import javax.naming.Binding;
 import javax.naming.Context;
@@ -14,15 +36,18 @@ import javax.naming.NamingException;
 import javax.naming.OperationNotSupportedException;
 import javax.naming.spi.InitialContextFactory;
 
-
-public class JSUnitInitialContextFactory implements InitialContextFactory {
-    private static Context ctx = new JSUnitContext();
+/**
+ * Initial Context can be helpful in testing J2EE components.
+ * @author Joel Hockey
+ */
+public class JairusUnitInitialContextFactory implements InitialContextFactory {
+    private static Context ctx = new JairusUnitContext();
 
     public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
         return ctx;
     }
 
-    private static class JSUnitContext implements Context {
+    private static class JairusUnitContext implements Context {
         private Hashtable<String, Object> env = new Hashtable<String, Object>();
 
         public Object addToEnvironment(String propName, Object propVal) throws NamingException {

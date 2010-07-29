@@ -5,9 +5,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>com.joelhockey</groupId>
-  <artifactId>jsunit</artifactId>
+  <artifactId>jairusunit</artifactId>
   <version>1.0</version>
-  <name>jsunit</name>
+  <name>jairusunit</name>
   <packaging>jar</packaging>
 
   <build>
@@ -27,7 +27,7 @@
         </configuration>
       </plugin>
       
-      <!-- example of using jsunit -->
+      <!-- example of using jairusunit -->
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
         <version>1.1</version>
@@ -40,15 +40,15 @@
             </goals>
             <configuration>
               <tasks>
-                <taskdef name="jsunit" classname="com.joelhockey.jsunit.JSUnitTask"
+                <taskdef name="jairusunit" classname="com.joelhockey.jairusunit.JairusUnitTask"
                   classpathref="maven.test.classpath" />
-                <jsunit failonerror="no" classpathref="maven.test.classpath">
+                <jairusunit failonerror="no" classpathref="maven.test.classpath">
                   <batchtest>
                     <fileset dir="src/test/javascript">
                       <include name="**/*test*.js" />
                     </fileset>
                   </batchtest>
-                </jsunit>
+                </jairusunit>
               </tasks>
             </configuration>
           </execution>
