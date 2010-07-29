@@ -2,8 +2,8 @@ JairusUnit
 ======
 JairusUnit is a JavaScript unit testing framework that uses Rhino and JUnit.
 
-JairusUnit ks by using Rhino's ability to make JavaScript objects
-extend Java classes.  JairusUnit forces JavaScript test objects to
+JairusUnit uses Rhino's ability to make JavaScript objects
+extend Java classes.  It coerces JavaScript test objects to
 extend the JUnit TestCase class and then uses JUnit to run
 the tests.
 
