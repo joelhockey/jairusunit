@@ -4,8 +4,7 @@ JairusUnit is a JavaScript server-side unit testing framework that uses Rhino an
 
 Copyright and Licence
 ---------------------
-Copyright Joel Hockey
-MIT Licence
+Copyright Joel Hockey.  MIT Licence
 
 How it Works
 ------------
