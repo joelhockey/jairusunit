@@ -191,7 +191,7 @@ public class JairusUnit {
 
         // start debugger if -Ddebugjs
         if (System.getProperty("debugjs") != null) {
-            Main main = new Main("Cirrus Debug " + Thread.currentThread().getName());
+            Main main = new Main("JairusUnit Debug " + Thread.currentThread().getName());
             main.setScope(ju.scope);
             main.attachTo(ContextFactory.getGlobal());
             main.pack();
