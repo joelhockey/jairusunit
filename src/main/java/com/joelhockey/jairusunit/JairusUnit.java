@@ -40,6 +40,7 @@ import junit.framework.TestSuite;
 import org.mozilla.javascript.ClassCache;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
+import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.RhinoException;
 
@@ -95,6 +96,9 @@ public class JairusUnit {
                     sw.write(".");
                 }
                 sw.write("^\n");
+            }
+            if (throwable instanceof JavaScriptException) {
+                sw.write("\n" + ((JavaScriptException) throwable).getValue().toString());
             }
         } else if (notRhinoExceptionMsg != null) {
             sw.write(notRhinoExceptionMsg);
