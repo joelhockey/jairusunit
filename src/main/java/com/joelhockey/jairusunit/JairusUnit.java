@@ -39,10 +39,12 @@ import junit.framework.TestSuite;
 
 import org.mozilla.javascript.ClassCache;
 import org.mozilla.javascript.Context;
+import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.tools.debugger.Main;
 
 /**
  * Main class to execute JairusUnit.  Takes names of js files as args.
@@ -62,6 +64,37 @@ public class JairusUnit {
                 "|com.joelhockey.jairusunit" +
             ")"
     );
+
+    private JairusUnitScope scope = new JairusUnitScope();
+
+    /**
+     * Return JUnit {@link TestSuite} containing all
+     * tests from given js file.
+     * @param file javascript file containing tests
+     * @return test suite
+     */
+    public TestSuite jairusunitTestSuite(String file) {
+        TestSuite result = new TestSuite("jairusunit");
+        Context cx = Context.enter();
+        try {
+            Function jairusunitTestSuite;
+            ClassCache.get(scope).setCachingEnabled(false); // need this
+            try {
+                scope.load("jairusunit.js");
+                jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
+                NativeJavaObject obj = (NativeJavaObject) jairusunitTestSuite.call(
+                        cx, scope, jairusunitTestSuite, new Object[] {file});
+                TestSuite suite = (TestSuite) obj.unwrap();
+                result.addTest(suite);
+            } catch (Exception e) {
+                String msg = JairusUnit.dumpError("Error loading jairusunit.js", e);
+                result.addTest(JairusUnit.warning(msg));
+            }
+        } finally {
+            Context.exit();
+        }
+        return result;
+    }
 
     /** Returns a test which will fail and log a warning message. */
     public static Test warning(final String msg) {
@@ -147,36 +180,6 @@ public class JairusUnit {
     }
 
     /**
-     * Return JUnit {@link TestSuite} containing all
-     * tests from given js file.
-     * @param file javascript file containing tests
-     * @return test suite
-     */
-    public static TestSuite jairusunitTestSuite(String file) {
-        TestSuite result = new TestSuite("jairusunit");
-        Context cx = Context.enter();
-        try {
-            Function jairusunitTestSuite;
-            JairusUnitScope scope = new JairusUnitScope(cx);
-            ClassCache.get(scope).setCachingEnabled(false); // need this
-            try {
-                scope.load("jairusunit.js");
-                jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
-                NativeJavaObject obj = (NativeJavaObject) jairusunitTestSuite.call(
-                        cx, scope, jairusunitTestSuite, new Object[] {file});
-                TestSuite suite = (TestSuite) obj.unwrap();
-                result.addTest(suite);
-            } catch (Exception e) {
-                String msg = JairusUnit.dumpError("Error loading jairusunit.js", e);
-                result.addTest(JairusUnit.warning(msg));
-            }
-        } finally {
-            Context.exit();
-        }
-        return result;
-    }
-
-    /**
      * Main.  Args include filenames with optional '-todir &;t'dir>' or '-basedir &lt;dir> included
      * at any position within files.  todir option gives directory to write
      * junit-style 'plain' and 'xml' reports, default todir is 'target/surefire-reports'.
@@ -184,6 +187,19 @@ public class JairusUnit {
      * @param args js files
      */
     public static void main(String[] args) {
+        JairusUnit ju = new JairusUnit();
+
+        // start debugger if -Ddebugjs
+        if (System.getProperty("debugjs") != null) {
+            Main main = new Main("Cirrus Debug " + Thread.currentThread().getName());
+            main.setScope(ju.scope);
+            main.attachTo(ContextFactory.getGlobal());
+            main.pack();
+            main.setSize(960, 720);
+            main.setVisible(true);
+        }
+
+
         boolean failure = false;
         try {
             String todir = "target/surefire-reports";
@@ -203,7 +219,7 @@ public class JairusUnit {
                     continue;
                 }
                 // get suite using full filepath
-                TestSuite suite = jairusunitTestSuite(basedir + "/" + arg);
+                TestSuite suite = ju.jairusunitTestSuite(basedir + "/" + arg);
 
                 // we need to mimic java-style pkgname.classname style to make reports look nice
                 // strip '.js' suffix, exclude basedir, prefix with 'jairusunit.' and change slashes to dots

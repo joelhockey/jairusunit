@@ -45,8 +45,9 @@ import org.mozilla.javascript.ScriptableObject;
 public class JairusUnitScope extends ImporterTopLevel {
     private static final long serialVersionUID = 0x37A5FBB0114CDFECL;
 
-    public JairusUnitScope(Context cx) {
-        super(cx);
+    public JairusUnitScope() {
+        Context cx = Context.enter();
+        initStandardObjects(cx, false);
         String[] names = {
             "load",
             "print",
@@ -54,6 +55,7 @@ public class JairusUnitScope extends ImporterTopLevel {
             "readFile",
         };
         defineFunctionProperties(names, JairusUnitScope.class, ScriptableObject.DONTENUM);
+        Context.exit();
      }
 
     /**
