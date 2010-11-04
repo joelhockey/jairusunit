@@ -56,6 +56,7 @@ public class JairusUnitTask extends Java {
     }
 
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
+    public void setDebugjs(boolean debugjs) { if (debugjs) createJvmarg().setValue("-Ddebugjs"); }
 
     @Override
     public void execute() throws BuildException {

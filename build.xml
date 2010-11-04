@@ -29,7 +29,8 @@
       </classpath>
     </taskdef>
     
-    <jairusunit failonerror="no"> <!-- optional fork (default yes), failonerror (default yes) -->
+  	<!-- optional fork (default yes), failonerror (default yes), debugjs (default no) -->
+    <jairusunit failonerror="no"> 
       <classpath> <!-- path to include jairusunit.jar, junit.jar, js.jar, any other java libs for testing -->
         <pathelement location="target/test-classes" />
         <pathelement location="target/classes" />
