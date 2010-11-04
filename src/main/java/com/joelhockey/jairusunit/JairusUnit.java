@@ -44,6 +44,7 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.RhinoException;
+import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.debugger.Main;
 
 /**
@@ -65,15 +66,24 @@ public class JairusUnit {
             ")"
     );
 
-    private JairusUnitScope scope = new JairusUnitScope();
-
     /**
      * Return JUnit {@link TestSuite} containing all
      * tests from given js file.
      * @param file javascript file containing tests
      * @return test suite
      */
-    public TestSuite jairusunitTestSuite(String file) {
+    public static TestSuite jairusunitTestSuite(String file) {
+        JairusUnitScope scope = new JairusUnitScope();
+        // start debugger if -Ddebugjs
+        if (System.getProperty("debugjs") != null) {
+            Main main = new Main("JairusUnit Debug " + file);
+            main.setScope(scope);
+            main.attachTo(ContextFactory.getGlobal());
+            main.pack();
+            main.setSize(960, 720);
+            main.setVisible(true);
+        }
+
         TestSuite result = new TestSuite("jairusunit");
         Context cx = Context.enter();
         try {
@@ -187,19 +197,6 @@ public class JairusUnit {
      * @param args js files
      */
     public static void main(String[] args) {
-        JairusUnit ju = new JairusUnit();
-
-        // start debugger if -Ddebugjs
-        if (System.getProperty("debugjs") != null) {
-            Main main = new Main("JairusUnit Debug " + Thread.currentThread().getName());
-            main.setScope(ju.scope);
-            main.attachTo(ContextFactory.getGlobal());
-            main.pack();
-            main.setSize(960, 720);
-            main.setVisible(true);
-        }
-
-
         boolean failure = false;
         try {
             String todir = "target/surefire-reports";
@@ -219,7 +216,7 @@ public class JairusUnit {
                     continue;
                 }
                 // get suite using full filepath
-                TestSuite suite = ju.jairusunitTestSuite(basedir + "/" + arg);
+                TestSuite suite = jairusunitTestSuite(basedir + "/" + arg);
 
                 // we need to mimic java-style pkgname.classname style to make reports look nice
                 // strip '.js' suffix, exclude basedir, prefix with 'jairusunit.' and change slashes to dots
