@@ -44,7 +44,6 @@ import org.mozilla.javascript.Function;
 import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.NativeJavaObject;
 import org.mozilla.javascript.RhinoException;
-import org.mozilla.javascript.Scriptable;
 import org.mozilla.javascript.tools.debugger.Main;
 
 /**
