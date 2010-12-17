@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.util.IllegalFormatException;
 
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.Function;
@@ -51,7 +52,6 @@ public class JairusUnitScope extends ImporterTopLevel {
         String[] names = {
             "load",
             "print",
-            "printf",
             "readFile",
         };
         defineFunctionProperties(names, JairusUnitScope.class, ScriptableObject.DONTENUM);
@@ -94,6 +94,29 @@ public class JairusUnitScope extends ImporterTopLevel {
     }
 
     public static void print(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
+        // check if printf format used
+        if (args != null && args.length > 1 && args[0] instanceof String) {
+            int numPercents = 0;
+            String format = (String) args[0];
+            for (int i = 0; i < format.length(); i++) {
+                if (format.charAt(i) == '%') {
+                    i++;
+                    if (format.length() <= i || format.charAt(i) != '%' ) {
+                        numPercents++;
+                    }
+                }
+            }
+            if (numPercents == args.length - 1) {
+                Object[] formatArgs = new Object[args.length - 1];
+                System.arraycopy(args, 1, formatArgs, 0, formatArgs.length);
+                try {
+                    System.out.println(String.format(format, formatArgs));
+                    return;
+                } catch (IllegalFormatException ife) {} // ignore
+            }
+        }
+
+        // not printf, just print each arg with space sep
         StringBuilder sb = new StringBuilder();
         String sep = "";
         for (int i=0; i < args.length; i++) {
@@ -102,14 +125,6 @@ public class JairusUnitScope extends ImporterTopLevel {
             sb.append(Context.toString(args[i]));
         }
         System.out.println(sb);
-    }
-
-    public static String printf(Context cx, Scriptable thisObj, Object[] args, Function funObj) {
-        String fstr = (String) args[0];
-        fstr = fstr.replace("%d", "%.0f"); // all numbers will be doubles, so convert here
-        Object[] fargs = new Object[args.length - 1];
-        System.arraycopy(args, 1, fargs, 0, fargs.length);
-        return String.format(fstr, fargs);
     }
 
     /**

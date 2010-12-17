@@ -45,7 +45,9 @@ public class JairusUnitTask extends Java {
         public void addFileSet(FileSet fileSet) {
             fileSets.add(fileSet);
         }
-        public void setTodir(String todir) { this.todir = todir; }
+        public void setTodir(String todir) {
+            this.todir = todir.replace('\\', '/');
+        }
     }
 
     private List<BatchTest> batchTests = new ArrayList<BatchTest>();
@@ -56,14 +58,22 @@ public class JairusUnitTask extends Java {
     }
 
     public void addBatchTest(BatchTest batchTest) { batchTests.add(batchTest); }
-    public void setDebugjs(boolean debugjs) { if (debugjs) createJvmarg().setValue("-Ddebugjs"); }
+    public void setDebugjs(boolean debugjs) {
+        if (debugjs) {
+            createJvmarg().setValue("-Ddebugjs");
+        }
+    }
 
     @Override
     public void execute() throws BuildException {
         // if -Dtest=? set, then filter based on it
         String test = getProject().getProperty("test");
-        if (test != null && !test.endsWith(".js")) {
-            test += ".js";
+        // add '.js' suffix and convert all slashes to dots
+        if (test != null) {
+            if (!test.endsWith(".js")) {
+                test += ".js";
+            }
+            test = test.replace('\\', '.').replace('/', '.');
         }
 
         String todir = "";
@@ -72,8 +82,11 @@ public class JairusUnitTask extends Java {
             todir = setArgIfDifferent("-todir", todir, batchTest.todir);
             for (FileSet fs : batchTest.fileSets) {
                 for (String file : fs.getDirectoryScanner(getProject()).getIncludedFiles()) {
-                    basedir = setArgIfDifferent("-basedir", basedir, fs.getDir(getProject()).getAbsolutePath());
-                    if (test == null || file.equals(test)) {
+                    // normalise file for compare - all slashes to dots
+                    file = file.replace('\\', '/');
+                    basedir = setArgIfDifferent("-basedir", basedir,
+                            fs.getDir(getProject()).getAbsolutePath().replace('\\', '/'));
+                    if (test == null || file.replace('/', '.').endsWith(test)) {
                         createArg().setValue(file);
                     }
                 }

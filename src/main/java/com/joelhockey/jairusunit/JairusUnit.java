@@ -197,10 +197,10 @@ public class JairusUnit {
      */
     public static void main(String[] args) {
         boolean failure = false;
+        String todir = "target/surefire-reports";
+        String basedir = "";
+        int i = 0;
         try {
-            String todir = "target/surefire-reports";
-            String basedir = "";
-            int i = 0;
             while (i < args.length) {
                 String arg = args[i++];
                 if ("-todir".equals(arg)) {

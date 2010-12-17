@@ -55,6 +55,18 @@ public class JairusUnitInitialContextFactory implements InitialContextFactory {
         public void bind(String name, Object obj) throws NamingException {
             ctxMap.put(name, obj);
         }
+        public void rebind(String name, Object obj) throws NamingException {
+            ctxMap.put(name, obj);
+        }
+        public void unbind(String name) throws NamingException {
+            ctxMap.remove(name);
+        }
+        public void rename(String oldName, String newName) throws NamingException {
+            Object value = ctxMap.remove(oldName);
+            if (value != null) {
+                ctxMap.put(newName, value);
+            }
+        }
         public void close() throws NamingException {}
 
         // ignore below here
@@ -78,11 +90,8 @@ public class JairusUnitInitialContextFactory implements InitialContextFactory {
         public Object lookupLink(Name name) throws NamingException { throw new UnsupportedOperationException(); }
         public Object lookupLink(String name) throws NamingException { throw new UnsupportedOperationException(); }
         public void rebind(Name name, Object obj) throws NamingException { throw new UnsupportedOperationException(); }
-        public void rebind(String name, Object obj) throws NamingException { throw new UnsupportedOperationException(); }
         public Object removeFromEnvironment(String propName) throws NamingException { throw new UnsupportedOperationException(); }
         public void rename(Name oldName, Name newName) throws NamingException { throw new UnsupportedOperationException(); }
-        public void rename(String oldName, String newName) throws NamingException { throw new UnsupportedOperationException(); }
         public void unbind(Name name) throws NamingException { throw new UnsupportedOperationException(); }
-        public void unbind(String name) throws NamingException { throw new UnsupportedOperationException(); }
     }
 }
