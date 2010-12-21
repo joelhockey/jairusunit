@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.net.URL;
 import java.util.IllegalFormatException;
 
 import org.mozilla.javascript.Context;
@@ -69,24 +70,25 @@ public class JairusUnitScope extends ImporterTopLevel {
         InputStream ins;
 
         // if file exists, load
+        URL url = null;
         File f = new File(path);
         if (f.exists()) {
-            ins = new FileInputStream(f);
+            url = f.toURL();
         // else, try a resource
         } else {
-            ins = JairusUnitScope.class.getResourceAsStream(path);
-            if (ins == null && !path.startsWith("/")) {
-                ins = JairusUnitScope.class.getResourceAsStream("/" + path);
+            url = JairusUnitScope.class.getResource(path);
+            if (url == null && !path.startsWith("/")) {
+                url = JairusUnitScope.class.getResource("/" + path);
             }
-            if (ins == null) {
+            if (url == null) {
                 throw new IOException("Could not find file: " + path);
             }
         }
 
-        Reader reader = new InputStreamReader(ins);
+        Reader reader = new InputStreamReader(url.openStream());
         Context cx = Context.enter();
         try {
-            cx.evaluateReader(this, reader, path, 1, null);
+            cx.evaluateReader(this, reader, url.toString(), 1, null);
         } finally {
             Context.exit();
             reader.close();
