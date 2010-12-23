@@ -37,7 +37,6 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
-import org.mozilla.javascript.ClassCache;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
@@ -72,25 +71,15 @@ public class JairusUnit {
      * @return test suite
      */
     public static TestSuite jairusunitTestSuite(String file) {
-        JairusUnitScope scope = new JairusUnitScope();
-        // start debugger if -Ddebugjs
-        if (System.getProperty("debugjs") != null) {
-            Main main = new Main("JairusUnit Debug " + file);
-            main.setScope(scope);
-            main.attachTo(ContextFactory.getGlobal());
-            main.pack();
-            main.setSize(960, 720);
-            main.setVisible(true);
-        }
-
         TestSuite result = new TestSuite("jairusunit");
         Context cx = Context.enter();
         try {
-            Function jairusunitTestSuite;
-            ClassCache.get(scope).setCachingEnabled(false); // need this
+            JairusUnitScope scope = new JairusUnitScope();
+
+//            ClassCache.get(scope).setCachingEnabled(false); // need this
             try {
                 scope.load("jairusunit.js");
-                jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
+                Function jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
                 NativeJavaObject obj = (NativeJavaObject) jairusunitTestSuite.call(
                         cx, scope, jairusunitTestSuite, new Object[] {file});
                 TestSuite suite = (TestSuite) obj.unwrap();
@@ -196,6 +185,19 @@ public class JairusUnit {
      * @param args js files
      */
     public static void main(String[] args) {
+        // start debugger if -Ddebugjs
+        if (System.getProperty("debugjs") != null) {
+            Main main = new Main("JairusUnit Debug");
+            main.attachTo(ContextFactory.getGlobal());
+            main.pack();
+            main.setSize(960, 720);
+            main.setVisible(true);
+        }
+
+        // enter context here to ensure only single context used for whole test
+        // this helps debugger and tests, and means that any change to the
+        // ContextFactory will not take effect
+        Context.enter();
         boolean failure = false;
         String todir = "target/surefire-reports";
         String basedir = "";
