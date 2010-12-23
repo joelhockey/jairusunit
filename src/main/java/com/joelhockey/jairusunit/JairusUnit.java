@@ -37,6 +37,7 @@ import junit.framework.TestCase;
 import junit.framework.TestResult;
 import junit.framework.TestSuite;
 
+import org.mozilla.javascript.ClassCache;
 import org.mozilla.javascript.Context;
 import org.mozilla.javascript.ContextFactory;
 import org.mozilla.javascript.Function;
@@ -76,7 +77,9 @@ public class JairusUnit {
         try {
             JairusUnitScope scope = new JairusUnitScope();
 
-//            ClassCache.get(scope).setCachingEnabled(false); // need this
+            // must stop Rhino from caching adaptor classes
+            // to allow multiple test methods on same generated class
+            ClassCache.get(scope).setCachingEnabled(false);
             try {
                 scope.load("jairusunit.js");
                 Function jairusunitTestSuite = (Function) scope.get("jairusunitTestSuite", scope);
